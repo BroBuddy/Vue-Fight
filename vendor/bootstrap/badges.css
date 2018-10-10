@@ -1,0 +1,44 @@
+.badge {
+    font-size: 90%;
+}
+
+.badge-primary {
+    background-color: #2A9FD6;
+}
+
+.badge-secondary {
+    background-color: #555;
+}
+
+.badge-danger,
+.progress-bar-danger {
+    background-color: #CC0000;
+}
+
+.badge-success,
+.progress-bar-success {
+    background-color: #77B300;
+}
+
+.badge-warning,
+.progress-bar-warning {
+    background-color: #FF8800;
+}
+
+.badge-info {
+    background-color: #9933CC;
+}
+
+.badge-light {
+    color: #212529;
+    background-color: #f8f9fa;
+}
+
+input {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #666;
+    color: #555;
+    text-align: center;
+    max-width: 50px;
+}

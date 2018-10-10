@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en-us" ng-app="myApp">
+  <head>
+      <title>VueJS</title>
+      <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+      <meta charset="UTF-8">
+
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+      <link rel="stylesheet" href="vendor/bootstrap/bootstrap-theme.min.css" />
+      <link rel="stylesheet" href="vendor/bootstrap/badges.css" />
+      <link rel="stylesheet" href="navi.css" />
+
+      <script src="https://npmcdn.com/vue/dist/vue.js"></script>
+  </head>
+  <body>
+
+    <div id="app">
+
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="icon-bar">
+          <a href="#"><i class="fa fa-user"></i></a> 
+          <a href="#"><i class="fa fa-handshake-o"></i></a> 
+          <a href="#"><i class="fa fa-gavel"></i></a> 
+          <a href="#"><i class="fa fa-trophy"></i></a> 
+          <a href="#"><i class="fa fa-flag"></i></a> 
+          <a class="active" href="#"><i class="fa fa-globe"></i></a> 
+          <a href="#"><i class="fa fa-envelope-o"></i></a>
+          <a href="#"><i class="fa fa-cog"></i></a>
+          <a href="#"><i class="fa fa-power-off"></i></a> 
+        </div>
+      </nav>
+
+      <div class="container">
+        <div class="row text-center">
+          <div class="col-sm-6 mb-3">
+            <br />
+            <h4>{{ attackerName }} (LvL {{ attackerLevel }})</h4>
+
+            <input value="1" min="1" max="100" v-model="attackerLevel" v-if="!isDisabled" />
+
+             <div class="progress" v-if="isDisabled">
+              <div class="progress-bar" role="progressbar" :aria-valuenow="attackerHealth"
+              :class="{'progress-bar-success': attackerHealth > 66, 'progress-bar-warning': attackerHealth <= 66 && attackerHealth > 33, 'progress-bar-danger': attackerHealth <= 33}"
+              aria-valuemin="0" aria-valuemax="100" :style="{width: attackerHealth + '%'}">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6 mb-3">
+            <br />
+            <h4>{{ defenderName }} (LvL {{ defenderLevel }})</h4>
+
+            <input value="1" min="1" max="100" v-model="defenderLevel" v-if="!isDisabled" />
+
+             <div class="progress" v-if="isDisabled">
+              <div class="progress-bar" role="progressbar" :aria-valuenow="defenderHealth"
+              :class="{'progress-bar-success': defenderHealth > 66, 'progress-bar-warning': defenderHealth <= 66 && defenderHealth > 33, 'progress-bar-danger': defenderHealth <= 33}"
+              aria-valuemin="0" aria-valuemax="100" :style="{width: defenderHealth + '%'}">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row text-center">
+          <div class="col-sm-12 mb-3">
+            <button class="btn btn-outline-success" @click="reload" v-if="isDisabled">Go back</button>
+            <button class="btn btn-outline-primary">Message to {{ defenderName }}</button>
+            <button class="btn btn-outline-warning">Add {{ defenderName }} to friends</button>
+            <button class="btn btn-outline-danger" @click="attack" v-if="!isDisabled">Attack {{ defenderName }}</button>
+          </div>
+        </div>
+        
+        <div class="row text-center" v-if="!isDisabled">
+          <div class="col-sm-6">
+             <div class="card border-secondary mb-3">
+                <div class="card-header">{{ attackerName }} attributes</div>
+                <div class="card-body">
+                  <p class="card-text">
+                    <span class="badge badge-danger">
+                      {{ attackerAttributes[0] }}
+                      Strength
+                    </span>
+
+                    <span class="badge badge-success">
+                      {{ attackerAttributes[1] }}
+                      Dexterity
+                    </span>
+
+                    <span class="badge badge-primary">
+                      {{ attackerAttributes[3] }}
+                      Intellect
+                    </span>
+                  </p>
+
+                  <p class="card-text">
+                    <span class="badge badge-warning">
+                      {{ attackerAttributes[5] }}
+                      Vitality
+                    </span>
+
+                    <span class="badge badge-success">
+                      {{ attackerAttributes[2] }}
+                      Quickness
+                    </span>
+
+                    <span class="badge badge-info">
+                      {{ attackerAttributes[4] }}
+                      Wisdom
+                    </span>
+                  </p>
+                </div>
+
+                <div class="card-header">{{ attackerName }} skills</div>
+                <div class="card-body">
+                  <p class="card-text">
+                    <span class="badge badge-danger">
+                      {{ attackerDamage }}
+                      Attack points
+                    </span>
+
+                    <span class="badge badge-success">
+                      {{ calculateChances(attackerAttributes[1], defenderAttributes[2], 1) }} %
+                      Strike chance
+                    </span>
+
+                    <span class="badge badge-primary">
+                      {{ calculateChances(attackerAttributes[3], defenderAttributes[3], 2) }} %
+                      Critical chance
+                    </span>
+                  </p>
+
+                  <p class="card-text">
+                    <span class="badge badge-warning">
+                      {{ attackerHealthpointsStart }}
+                      Health points
+                    </span>
+
+                    <span class="badge badge-success">
+                      {{ calculateChances(attackerAttributes[2], defenderAttributes[1], 1) }} %
+                      Evasion chance
+                    </span>
+
+                    <span class="badge badge-secondary">
+                      {{ calculateReduce(defenderLevel, attackerArmor) }} %
+                      Damage reduction
+                    </span>
+                  </p>
+
+                  <p class="card-text">
+                    <span class="badge badge-info">
+                      {{ calculateChances(attackerAttributes[4], defenderAttributes[4], 3) }} %
+                      Heal chance
+                    </span>
+                  </p>
+                </div>
+
+                <div class="card-header">{{ attackerName }} equipment</div>
+                <div class="card-body">
+                  <p class="card-text">
+                    <span class="badge badge-danger">
+                      {{ attackerDamage }}
+                      Weapon damage
+                    </span>
+                  </p>
+
+                  <p class="card-text">
+                    <span class="badge badge-secondary">
+                      {{ attackerArmor }}
+                      Armour
+                    </span>
+                  </p>
+                </div>
+              </div>  
+          </div>
+
+          <div class="col-sm-6">            
+             <div class="card border-secondary mb-3">
+                <div class="card-header">{{ defenderName }} attributes</div>
+                <div class="card-body">
+                  <p class="card-text">
+                    <span class="badge badge-danger">
+                      {{ defenderAttributes[0] }}
+                      Strength
+                    </span>
+
+                    <span class="badge badge-success">
+                      {{ defenderAttributes[1] }}
+                      Dexterity
+                    </span>
+
+                    <span class="badge badge-primary">
+                      {{ defenderAttributes[3] }}
+                      Intellect
+                    </span>
+                  </p>
+
+                  <p class="card-text">
+                    <span class="badge badge-warning">
+                      {{ defenderAttributes[5] }}
+                      Vitality
+                    </span>
+
+                    <span class="badge badge-success">
+                      {{ defenderAttributes[2] }}
+                      Quickness
+                    </span>
+
+                    <span class="badge badge-info">
+                      {{ defenderAttributes[4] }}
+                      Wisdom
+                    </span>
+                  </p>
+                </div>
+
+                <div class="card-header">{{ defenderName }} skills</div>
+                <div class="card-body">
+                  <p class="card-text">
+                    <span class="badge badge-danger">
+                      {{ defenderDamage }}
+                      Attack points
+                    </span>
+
+                    <span class="badge badge-success">
+                      {{ calculateChances(defenderAttributes[1], attackerAttributes[2], 1) }} %
+                      Strike chance
+                    </span>
+
+                    <span class="badge badge-primary">
+                      {{ calculateChances(defenderAttributes[3], attackerAttributes[3], 2) }} %
+                      Critical chance
+                    </span>
+                  </p>
+
+                  <p class="card-text">
+                    <span class="badge badge-warning">
+                      {{ defenderHealthpointsStart }}
+                      Health points
+                    </span>
+
+                    <span class="badge badge-success">
+                      {{ calculateChances(defenderAttributes[2], attackerAttributes[1], 1) }} %
+                      Evasion chance
+                    </span>
+
+                    <span class="badge badge-secondary">
+                      {{ calculateReduce(attackerLevel, defenderArmor) }} %
+                      Damage reduction
+                    </span>
+                  </p>
+
+                  <p class="card-text">
+                    <span class="badge badge-info">
+                      {{ calculateChances(defenderAttributes[4], attackerAttributes[4], 3) }} %
+                      Heal chance
+                    </span>
+                  </p>
+                </div>
+                
+                <div class="card-header">{{ defenderName }} equipment</div>
+                <div class="card-body">
+                  <p class="card-text">
+                    <span class="badge badge-danger">
+                      {{ defenderDamage }}
+                      Weapon damage
+                    </span>
+                  </p>
+
+                  <p class="card-text">
+                    <span class="badge badge-secondary">
+                      {{ defenderArmor }}
+                      Armour
+                    </span>
+                  </p>
+                </div>
+              </div>    
+          </div>
+        </div>
+
+        <div class="card text-white mb-3" :class="{'bg-success':isWon, 'bg-danger':!isWon}" v-if="isOver">
+          <div class="card-header">Result</div>
+          <div class="card-body">
+            <h4 class="card-title">{{ result }}</h4>
+          </div>
+        </div>
+
+        <div class="row text-center" v-if="isDisabled">
+          <table class="table table-striped">
+              <tbody>
+                <tr v-for="(item, index) in messages">
+                  <td class="text-left" v-html="item.attacker"></td>
+                  <td class="text-right" v-html="item.defender"></td>
+                </tr>
+              </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="tooltip.js"></script>
+
+  </body>
+</html>
